@@ -170,9 +170,9 @@ class ZOffsetPlugin(Extension):
                 else:
                     # process all G0/G1 lines and adjust the Z value
                     for n in range(2, len(gcode_list)): # all gcode lists / layers, start at layer 1 = gcode list 2
-                        if gcode_list[n] = "T0":
+                        if gcode_list[n] == "T0":
                             active_nozzle = 0
-                        elif gcode_list[n] = "T1":
+                        elif gcode_list[n] == "T1":
                             active_nozzle = 1
                             
                         lines = gcode_list[n].split("\n")
@@ -189,7 +189,7 @@ class ZOffsetPlugin(Extension):
                             result = z_move_regex.fullmatch(line)
                             if result:
                                 try:
-                                    if active_nozzle = 0:
+                                    if active_nozzle == 0:
                                         adjusted_z = round(float(result.group(2)) + z_offset_value, 5)
                                     else:
                                         adjusted_z = round(float(result.group(2)) + z_offset_value + z_offset_value_right_nozzle, 5)
@@ -198,7 +198,7 @@ class ZOffsetPlugin(Extension):
                                     Logger.log("e", "Unable to process Z coordinate in line %s", line)
                                     continue
                                 lines[line_nr] = result.group(1) + str(adjusted_z) + result.group(3) + " ;adjusted by z offset"
-                                if active_nozzle = 1: lines[line_nr] = lines[line_nr] + " right nozzle"
+                                if active_nozzle == 1: lines[line_nr] = lines[line_nr] + " right nozzle"
                                 gcode_list[n] = "\n".join(lines)
 
                 gcode_list[0] += ";ZOFFSETPROCESSED\n"
