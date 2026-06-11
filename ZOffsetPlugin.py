@@ -113,7 +113,8 @@ class ZOffsetPlugin(Extension):
         z_offset_value_right_nozzle = global_container_stack.getProperty("adhesion_z_offset_right_nozzle", "value")
         if z_offset_value_right_nozzle == 0:
             return
-                use_extensive_offset = global_container_stack.getProperty("adhesion_z_offset_extensive_processing", "value")
+        
+        use_extensive_offset = global_container_stack.getProperty("adhesion_z_offset_extensive_processing", "value")
 
         gcode_dict = getattr(scene, "gcode_dict", {})
         if not gcode_dict: # this also checks for an empty dict
