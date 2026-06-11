@@ -33,6 +33,19 @@ class ZOffsetPlugin(Extension):
             "settable_per_extruder": False,
             "settable_per_meshgroup": False
         }
+        self._settings_dict["adhesion_z_offset_right_nozzle"] = {
+            "label": "Right Nozzle Z Offset",
+            "description": "An additional offset of the right nozzle platform in relation to the left nozzle. A negative value 'squishes' the print into the buildplate, a positive value will result in a bigger distance between the buildplate and the print.",
+            "type": "float",
+            "unit": "mm",
+            "default_value": 0,
+            "minimum_value_warning": "-(layer_height_0 + adhesion_z_offset + 0.15)",
+            "maximum_value_warning": "layer_height_0",
+            "resolve": "extruderValue(adhesion_extruder_nr, 'adhesion_z_offset_right_nozzle') if resolveOrValue('adhesion_type') != 'none' else min(extruderValues('adhesion_z_offset_right_nozzle'))",
+            "settable_per_mesh": False,
+            "settable_per_extruder": False,
+            "settable_per_meshgroup": False
+        }
         self._settings_dict["adhesion_z_offset_extensive_processing"] = {
             "label": "Extensive Z Offset Processing",
             "description": "Apply the Z Offset throughout the Gcode file instead of affecting the coordinate system. Turning this option on will increase the processing time so it is recommended to leave it off, but it may be needed for some firmware versions.",
@@ -96,8 +109,11 @@ class ZOffsetPlugin(Extension):
         z_offset_value = global_container_stack.getProperty("adhesion_z_offset", "value")
         if z_offset_value == 0:
             return
-
-        use_extensive_offset = global_container_stack.getProperty("adhesion_z_offset_extensive_processing", "value")
+            
+        z_offset_value = global_container_stack.getProperty("adhesion_z_offset_right_nozzle", "value")
+        if z_offset_value == 0:
+            return
+                use_extensive_offset = global_container_stack.getProperty("adhesion_z_offset_extensive_processing", "value")
 
         gcode_dict = getattr(scene, "gcode_dict", {})
         if not gcode_dict: # this also checks for an empty dict
