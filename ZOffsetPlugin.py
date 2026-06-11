@@ -190,7 +190,7 @@ class ZOffsetPlugin(Extension):
                                 try:
                                     if active_nozzle = 0:
                                         adjusted_z = round(float(result.group(2)) + z_offset_value, 5)
-                                    else
+                                    else:
                                         adjusted_z = round(float(result.group(2)) + z_offset_value + z_offset_value_right_nozzle, 5)
 
                                 except ValueError:
