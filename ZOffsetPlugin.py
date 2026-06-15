@@ -172,7 +172,7 @@ class ZOffsetPlugin(Extension):
                 else:
                     # process all G0/G1 lines and adjust the Z value
                     # Logger.log("d", "gcode_list length = %s" % str(len(gcode_list)))
-                    for n in range(2, len(gcode_list)): # all gcode lists / layers, start at layer 1 = gcode list 2
+                    for n in range(1, len(gcode_list)): # all gcode lists / layers, start at layer 1 = gcode list 2
                         # Logger.log("d", str(n))
                         lines = gcode_list[n].split("\n")
                         # Logger.log("d", "lines length = %s" % str(len(lines)))
