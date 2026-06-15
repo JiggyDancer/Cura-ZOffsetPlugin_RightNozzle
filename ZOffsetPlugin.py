@@ -122,7 +122,7 @@ class ZOffsetPlugin(Extension):
             return
 
         dict_changed = False
-        z_move_regex = re.compile(r"(G[01]\s.*Z)([-\+]?\d*\.?\d*)(.*)")
+        z_move_regex = re.compile(r"(G.*\sZ)([0-9]*.[0-9]*)(.*)")
 
         for plate_id in gcode_dict:
             gcode_list = gcode_dict[plate_id]
@@ -172,8 +172,10 @@ class ZOffsetPlugin(Extension):
                     for n in range(2, len(gcode_list)): # all gcode lists / layers, start at layer 1 = gcode list 2
                         if gcode_list[n] == "T0":
                             active_nozzle = 0
+                            Logger.log(gcode_list[n] + " - active_nozzle = 0")
                         elif gcode_list[n] == "T1":
                             active_nozzle = 1
+                            Logger.log(gcode_list[n] + " - active_nozzle = 1")
                             
                         lines = gcode_list[n].split("\n")
                         for (line_nr, line) in enumerate(lines):
