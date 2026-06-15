@@ -4,7 +4,7 @@ Calibrating the Z Offset on my Ultimaker 3 is such a pain.  The process relies o
 
 Replace ZOffsetPlugin.py in :
 
-_C:\Users\\<UserName>\AppData\Roaming\cura\\<CurrentVersion>\plugins\ZOffsetPlugin\ZOffsetPlugin_
+_C:\Users\UserName\AppData\Roaming\cura\CurrentVersion\plugins\ZOffsetPlugin\ZOffsetPlugin_
 
 
 
