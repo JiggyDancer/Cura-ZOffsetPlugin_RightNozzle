@@ -46,16 +46,6 @@ class ZOffsetPlugin(Extension):
             "settable_per_extruder": False,
             "settable_per_meshgroup": False
         }
-        self._settings_dict["adhesion_z_offset_extensive_processing"] = {
-            "label": "Extensive Z Offset Processing",
-            "description": "Apply the Z Offset throughout the Gcode file instead of affecting the coordinate system. Turning this option on will increase the processing time so it is recommended to leave it off, but it may be needed for some firmware versions.",
-            "type": "bool",
-            "default_value": False,
-            "value": "True if machine_gcode_flavor == \"Griffin\" else False",
-            "settable_per_mesh": False,
-            "settable_per_extruder": False,
-            "settable_per_meshgroup": False
-        }
 
         ContainerRegistry.getInstance().containerLoadComplete.connect(self._onContainerLoadComplete)
 
@@ -109,7 +99,6 @@ class ZOffsetPlugin(Extension):
         # get setting from Cura
         z_offset_value = global_container_stack.getProperty("adhesion_z_offset", "value")
         z_offset_value_right_nozzle = global_container_stack.getProperty("adhesion_z_offset_right_nozzle", "value")
-        use_extensive_offset = global_container_stack.getProperty("adhesion_z_offset_extensive_processing", "value")
 
         gcode_dict = getattr(scene, "gcode_dict", {})
         if not gcode_dict: # this also checks for an empty dict
@@ -138,70 +127,43 @@ class ZOffsetPlugin(Extension):
                 relative_mode = False
                 active_nozzle = 0
                 
-                if not use_extensive_offset:
-                    Logger.log("d", "use_extensive_offset = False")
-                    # find the first vertical G0/G1, adjust it and reset the internal coordinate to apply offset to all subsequent moves
-                    lines = gcode_list[2].split("\n")
-                    for (line_nr, line) in enumerate(lines):
-                        if line.startswith("G91"):
+                # process all G0/G1 lines and adjust the Z value
+                for n in range(1, len(gcode_list)): # all gcode lists / layers, start at layer 1 = gcode list 2
+                    lines = gcode_list[n].split("\n")
+                    
+                    for line_nr, line in enumerate(lines):
+                        if line.startswith("T0"):
+                            active_nozzle = 0
+                            continue
+                        elif line.startswith("T1"):
+                            active_nozzle = 1
+                            continue
+                        elif line.startswith("G91"):
                             relative_mode = True
                             continue
                         elif line.startswith("G90"):
                             relative_mode = False
                             continue
+                        
                         if relative_mode:
                             continue
 
                         result = z_move_regex.fullmatch(line)
                         if result:
                             try:
-                                adjusted_z = round(float(result.group(2)) + z_offset_value, 5)
+                                if active_nozzle == 0:
+                                    adjusted_z = round(float(result.group(2)) + z_offset_value, 5)
+                                else:
+                                    adjusted_z = round(float(result.group(2)) + z_offset_value + z_offset_value_right_nozzle, 5)
                             except ValueError:
                                 Logger.log("e", "Unable to process Z coordinate in line %s", line)
                                 continue
-                            lines[line_nr] = result.group(1) + str(adjusted_z) + result.group(3) + " ;adjusted by z offset"
-                            lines[line_nr] += "\n" + "G92 Z" + result.group(2) + " ;consider this the original z before offset"
-                            gcode_list[2] = "\n".join(lines)
-                            break
-
-                else:
-                    # process all G0/G1 lines and adjust the Z value
-                    for n in range(1, len(gcode_list)): # all gcode lists / layers, start at layer 1 = gcode list 2
-                        lines = gcode_list[n].split("\n")
-                        
-                        for line_nr, line in enumerate(lines):
-                            if line.startswith("T0"):
-                                active_nozzle = 0
-                                continue
-                            elif line.startswith("T1"):
-                                active_nozzle = 1
-                                continue
-                            elif line.startswith("G91"):
-                                relative_mode = True
-                                continue
-                            elif line.startswith("G90"):
-                                relative_mode = False
-                                continue
                             
-                            if relative_mode:
-                                continue
-
-                            result = z_move_regex.fullmatch(line)
-                            if result:
-                                try:
-                                    if active_nozzle == 0:
-                                        adjusted_z = round(float(result.group(2)) + z_offset_value, 5)
-                                    else:
-                                        adjusted_z = round(float(result.group(2)) + z_offset_value + z_offset_value_right_nozzle, 5)
-                                except ValueError:
-                                    Logger.log("e", "Unable to process Z coordinate in line %s", line)
-                                    continue
-                                
-                                lines[line_nr] = result.group(1) + str(adjusted_z) + result.group(3) + " ;adjusted by z offset"
-                                if active_nozzle == 1: lines[line_nr] += " right nozzle"
-                                
-                                lines[line_nr] += " from " + result.group(2) + " mm"
-                                gcode_list[n] = "\n".join(lines)
+                            lines[line_nr] = result.group(1) + str(adjusted_z) + result.group(3) + " ;adjusted by z offset"
+                            if active_nozzle == 1: lines[line_nr] += " right nozzle"
+                            
+                            lines[line_nr] += " from " + result.group(2) + " mm"
+                            gcode_list[n] = "\n".join(lines)
 
                 gcode_list[0] += ";ZOFFSETPROCESSED\n"
                 gcode_dict[plate_id] = gcode_list
