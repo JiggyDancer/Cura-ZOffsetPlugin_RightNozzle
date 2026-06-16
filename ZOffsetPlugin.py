@@ -109,10 +109,6 @@ class ZOffsetPlugin(Extension):
         # get setting from Cura
         z_offset_value = global_container_stack.getProperty("adhesion_z_offset", "value")
         z_offset_value_right_nozzle = global_container_stack.getProperty("adhesion_z_offset_right_nozzle", "value")
-        Logger.log("d", "z_offset_value = " + str(z_offset_value))
-        Logger.log("d", "z_offset_value_right_nozzle = " + str(z_offset_value_right_nozzle))
-        
-            
         use_extensive_offset = global_container_stack.getProperty("adhesion_z_offset_extensive_processing", "value")
 
         gcode_dict = getattr(scene, "gcode_dict", {})
