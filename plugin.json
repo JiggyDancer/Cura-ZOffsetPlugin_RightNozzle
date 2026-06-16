@@ -1,6 +1,6 @@
 {
-    "name": "Z-Offset plugin relaxed",
-    "author": "Andrejs",
+    "name": "Z-Offset plugin + right nozzle",
+    "author": "Andrejs + JiggyDancer",
     "version": "3.6.0",
     "description": "Adds a Z Offset setting to change the distance between the nozzle and the buildplate",
     "api": 5,
