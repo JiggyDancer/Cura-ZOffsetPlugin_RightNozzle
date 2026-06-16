@@ -14,7 +14,7 @@ This plugin adds a setting named "Z Offset" to the Build Plate Adhesion settings
 
 The Z Offset setting can be found in the Custom print setup by using the Search field on top of the settings. If you want to make the setting permanently visible in the sidebar, right click and select "Keep this setting visible".
 
-~~The plugin adjusts the first move on the Z axis in the first layer by adding the Z offset value, and then instructs the printer to consider this the original first layer height. For example, layer 1 of a print with an Initial Layer Height of 0.25, and a Z Offset value of 0.05 may look like this:
+~~The plugin adjusts the first move on the Z axis in the first layer by adding the Z offset value, and then instructs the printer to consider this the original first layer height. For example, layer 1 of a print with an Initial Layer Height of 0.25, and a Z Offset value of 0.05 may look like this:~~
 ```
 ...
 ;LAYER:0
