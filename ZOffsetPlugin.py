@@ -76,6 +76,7 @@ class ZOffsetPlugin(Extension):
         if not isinstance(container, DefinitionContainer):
             # skip containers that are not definitions
             return
+            
         if container.getMetaDataEntry("type") == "extruder":
             # skip extruder definitions
             return
@@ -99,8 +100,6 @@ class ZOffsetPlugin(Extension):
 
 
     def _filterGcode(self, output_device):
-        #  Logger.log("d", "**************************************************")
-        # Logger.log("d", "Running _filterGcode")
         scene = self._application.getController().getScene()
 
         global_container_stack = self._application.getGlobalContainerStack()
@@ -171,39 +170,27 @@ class ZOffsetPlugin(Extension):
 
                 else:
                     # process all G0/G1 lines and adjust the Z value
-                    # Logger.log("d", "gcode_list length = %s" % str(len(gcode_list)))
                     for n in range(1, len(gcode_list)): # all gcode lists / layers, start at layer 1 = gcode list 2
-                        # Logger.log("d", str(n))
                         lines = gcode_list[n].split("\n")
-                        # Logger.log("d", "lines length = %s" % str(len(lines)))
                         
                         for line_nr, line in enumerate(lines):
                             if line.startswith("T0"):
-                                # Logger.log("d", str(line_nr) + " : " + line)
-                                # Logger.log("d", line + " active nozzle = 0")
                                 active_nozzle = 0
                                 continue
                             elif line.startswith("T1"):
-                                # Logger.log("d", str(line_nr) + " : " + line)
-                                # Logger.log("d", line + " active nozzle = 1")
                                 active_nozzle = 1
                                 continue
                             elif line.startswith("G91"):
-                                # Logger.log("d", str(line_nr) + " : " + line)
-                                # Logger.log("d", "relative_mode = True")
                                 relative_mode = True
                                 continue
                             elif line.startswith("G90"):
-                                # Logger.log("d", str(line_nr) + " : " + line)
-                                # Logger.log("d", "relative_mode = False")
                                 relative_mode = False
                                 continue
+                            
                             if relative_mode:
-                                # Logger.log("d", "Skip in relative mode")
                                 continue
 
                             result = z_move_regex.fullmatch(line)
-                                                      
                             if result:
                                 try:
                                     if active_nozzle == 0:
@@ -213,10 +200,11 @@ class ZOffsetPlugin(Extension):
                                 except ValueError:
                                     Logger.log("e", "Unable to process Z coordinate in line %s", line)
                                     continue
+                                
                                 lines[line_nr] = result.group(1) + str(adjusted_z) + result.group(3) + " ;adjusted by z offset"
                                 if active_nozzle == 1: lines[line_nr] += " right nozzle"
-                                lines[line_nr] += " from " + result.group(2) + " mm"
                                 
+                                lines[line_nr] += " from " + result.group(2) + " mm"
                                 gcode_list[n] = "\n".join(lines)
 
                 gcode_list[0] += ";ZOFFSETPROCESSED\n"
@@ -228,6 +216,3 @@ class ZOffsetPlugin(Extension):
 
         if dict_changed:
             setattr(scene, "gcode_dict", gcode_dict)
-        
-        # Logger.log("d", "Ending _filterGcode")
-        # Logger.log("d", "**************************************************")
