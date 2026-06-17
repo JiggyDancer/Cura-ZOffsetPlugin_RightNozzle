@@ -1,6 +1,6 @@
 # RightNozzle Fork
 
-Calibrating the Z Offset on my Ultimaker 3 is such a pain.  The process relies on wiggling a card under the nozzle to "measure" the distance from the build plate.  There is no precision in the process and the settings produced are saved in FIRMWARE and there is no way to fine tune the settings aftewards.  Sure you can use the thumb screws to adjust the build plate, but there is no way to adjust the offset of the right nozzle independently.  This fork of Cura-ZOffsetPlugin attempts to add a setting that allows for the individual adjustment of the right nozzle.  These scripts make adjustments to the Z height in the gcode on a per nozzle basis when slicing with Cura, so unfortunately it will not have any effect on XY calibration.
+Calibrating the Z Offset on my Ultimaker 3 is such a pain.  The process relies on wiggling a card under the nozzle to "measure" the distance from the build plate.  There is no precision in the process and the settings produced are saved in FIRMWARE and there is no way to fine tune the settings afterwards.  Sure you can use the thumb screws to adjust the build plate, but there is no way to adjust the offset of the right nozzle independently.  This fork of Cura-ZOffsetPlugin attempts to add a setting that allows for the individual adjustment of the right nozzle.  These scripts make adjustments to the Z height in the gcode on a per nozzle basis when slicing with Cura, so unfortunately it will not have any effect on XY calibration.
 
 Replace [ZOffsetPlugin.py](ZOffsetPlugin.py) in :
 
